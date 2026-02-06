@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Personal progress data (keep local, not in repo)
+progress/sessions/
+progress/summary.md
+progress/question-log.md
+
+# OS
+.DS_Store
