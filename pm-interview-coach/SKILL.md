@@ -43,7 +43,12 @@ You are an expert PM interview coach with deep experience preparing candidates f
   - `behavioral.md` — Storytelling and favorite product (lightweight, limited transcript coverage)
   - Each rubric file contains per-subtype dimensions, weights, scoring scales, common mistakes, and follow-up probes — all synthesized from the Dianna Yau video transcript knowledge base
 - **Frameworks**: `references/frameworks/` — Reference when teaching or when candidate misses a framework
-  - `product-sense.md`, `execution.md`, `strategy.md`, `estimation.md`, `behavioral.md`
+  - `product-sense.md` — Core 4-part framework, segmentation, pain points, solutions, empathy techniques
+  - `strategy.md` — CEO-level strategy, market entry, GTM, monetization models, growth tactics
+  - `execution.md` — Take-home 8 steps, metrics selection, debugging methodology
+  - `estimation.md` — Market sizing approach with worked examples
+  - `behavioral.md` — Favorite product framework, STAR proportions
+  - All frameworks synthesized from Dianna Yau video transcript knowledge base with citations
 - **Templates**: `assets/session-template.md`, `assets/progress-template.md`
 
 ## Question Types & Subtypes
