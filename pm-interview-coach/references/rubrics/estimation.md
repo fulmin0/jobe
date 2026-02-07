@@ -1,58 +1,86 @@
 # Estimation Evaluation Rubric
 
+Limited transcript coverage (market sizing appears within strategy videos, no dedicated estimation video). This rubric combines insights from market sizing examples in strategy videos with general PM interview best practices.
+
+**Source videos:** `4RGlcs-_Ke0` (market sizing within market entry), `vpsUw1vP8w4` (overview mention)
+
+---
+
 ## Dimensions
 
-### 1. Problem Decomposition (Weight: 30%)
+| # | Dimension | Weight |
+|---|-----------|--------|
+| 1 | Problem Decomposition | 30% |
+| 2 | Assumptions Quality | 25% |
+| 3 | Mathematical Execution | 20% |
+| 4 | Sanity Check | 15% |
+| 5 | Communication | 10% |
+
+---
+
+### 1. Problem Decomposition (30%)
 
 | Score | Description |
 |-------|-------------|
-| 1 | No breakdown, guesses a final number directly |
-| 2 | Attempts breakdown but misses key components or uses wrong splits |
-| 3 | Logical breakdown into 3-5 components with reasonable structure |
-| 4 | Elegant decomposition that captures all key variables, clearly explains each step |
-| 5 | Multiple decomposition approaches considered, picks the best one and cross-validates |
+| 5 | Multiple decomposition approaches considered, picks the best one and cross-validates. Elegant breakdown that captures all key variables. |
+| 4 | Logical breakdown into key components with clear explanation of each step. |
+| 3 | Reasonable 3-5 component breakdown with logical structure. |
+| 2 | Attempts breakdown but misses key components or uses wrong splits. |
+| 1 | No breakdown. Guesses a final number directly. |
 
-### 2. Assumptions Quality (Weight: 25%)
-
-| Score | Description |
-|-------|-------------|
-| 1 | Unstated or wildly inaccurate assumptions |
-| 2 | States assumptions but they are unreasonable or unjustified |
-| 3 | Reasonable assumptions, stated explicitly, within an order of magnitude |
-| 4 | Well-calibrated assumptions with reasoning for each, uses anchor data points |
-| 5 | Sensitivity analysis on key assumptions, identifies which ones matter most to the answer |
-
-### 3. Mathematical Execution (Weight: 20%)
+### 2. Assumptions Quality (25%)
 
 | Score | Description |
 |-------|-------------|
-| 1 | Arithmetic errors, gets lost in calculations |
-| 2 | Correct math but unnecessarily complex or hard to follow |
-| 3 | Clean calculations, easy to follow, arrives at a reasonable answer |
-| 4 | Efficient calculation with clear intermediate results, uses rounding well |
-| 5 | Elegant math, shows work clearly, rounds appropriately at each step |
+| 5 | Well-calibrated assumptions with reasoning for each. Uses anchor data points. Sensitivity analysis on key assumptions — identifies which ones matter most. Example quality from videos: "7B devices → 3.5B smartphones → 1B purchased yearly → 50M at 5% share" (`4RGlcs-_Ke0`). |
+| 4 | Reasonable assumptions, each with stated rationale. Uses real-world anchors. |
+| 3 | Stated assumptions within an order of magnitude. Some rationale provided. |
+| 2 | Unstated or poorly justified assumptions. |
+| 1 | Wildly inaccurate assumptions or no assumptions stated. |
 
-### 4. Sanity Check (Weight: 15%)
+**Key signal from videos:** Even imperfect math is better than none — rough calculations show analytical thinking (`4RGlcs-_Ke0`).
 
-| Score | Description |
-|-------|-------------|
-| 1 | No validation of the final answer |
-| 2 | Says "seems reasonable" without actually checking |
-| 3 | Compares to at least one known reference point or related fact |
-| 4 | Multiple sanity checks from different angles, adjusts if something seems off |
-| 5 | Cross-validates using an alternative estimation approach to confirm the range |
-
-### 5. Communication (Weight: 10%)
+### 3. Mathematical Execution (20%)
 
 | Score | Description |
 |-------|-------------|
-| 1 | Hard to follow the reasoning, jumps between steps |
-| 2 | Understandable but disorganized, hard to audit |
-| 3 | Clear narration of approach, listener can follow along |
-| 4 | Engaging walkthrough, checks in with interviewer, explains trade-offs |
-| 5 | Would be compelling in a board presentation, perfect pacing and clarity |
+| 5 | Efficient calculation with clear intermediate results. Rounds appropriately at each step. Easy for interviewer to follow and audit. |
+| 4 | Clean calculations, arrives at reasonable answer. |
+| 3 | Correct math, easy to follow. |
+| 2 | Some arithmetic errors or unnecessarily complex approach. |
+| 1 | Gets lost in calculations. Major errors. |
 
-## Follow-up Probe Suggestions
+### 4. Sanity Check (15%)
+
+| Score | Description |
+|-------|-------------|
+| 5 | Cross-validates using an alternative estimation approach. Multiple sanity checks from different angles. Adjusts if something seems off. |
+| 4 | Multiple sanity checks using known reference points. |
+| 3 | Compares to at least one known reference point or related fact. |
+| 2 | Says "seems reasonable" without actually checking. |
+| 1 | No validation of the final answer. |
+
+### 5. Communication (10%)
+
+| Score | Description |
+|-------|-------------|
+| 5 | Clear narration of approach. Checks in with interviewer. Perfect pacing. |
+| 4 | Engaging walkthrough with good structure. |
+| 3 | Listener can follow the reasoning. |
+| 2 | Understandable but disorganized. |
+| 1 | Hard to follow. Jumps between steps. |
+
+---
+
+## Common Mistakes
+
+- Guessing a number without showing work
+- Not stating assumptions explicitly
+- Over-complicating with unnecessary precision (rounding is fine)
+- Not sanity-checking the final answer against known facts
+- Being afraid to do rough math during the interview
+
+## Follow-up Probes
 
 - "Your estimate is X. How confident are you? What range would you give?"
 - "What if [key assumption] was off by 2x? How would that change your answer?"
