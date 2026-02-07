@@ -19,6 +19,18 @@
 2. [Follow-up 2] — Response: [summary]
 3. [Follow-up 3] — Response: [summary]
 
+## Full Transcript
+
+**Interviewer:** [Question as presented]
+
+**Candidate:** [Candidate's full verbatim response]
+
+**Interviewer:** [Follow-up question]
+
+**Candidate:** [Candidate's full verbatim response]
+
+<!-- Repeat for all exchanges -->
+
 ## Evaluation
 
 ### Scores
