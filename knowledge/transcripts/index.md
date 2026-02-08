@@ -72,16 +72,20 @@
 
 | Framework | Videos |
 |-----------|--------|
-| CIRCLES / 4-Part Product Sense | How to Answer, Common Mistakes, Get Faster, Advanced Tips, all mock interviews |
-| Prioritization (RICE/ICE/Matrix) | Segmenting Users, Pain Points, Fitness Mock, Parking Mock, DoorDash Mock |
-| User Segmentation (MECE) | Segmenting Users, Common Mistakes, all mock interviews |
-| Go-to-Market | GTM in 5 Steps, Education Mock |
-| Market Entry / Decision Tree | Market Entry (Amazon smartphones) |
-| Monetization Models | Monetization |
-| TAM/SAM/SOM | Market Entry |
-| Take-Home Structure | Take-Home 8 Steps, Take-Home Real Example |
-| Marketplace (Supply/Demand) | Parking Mock, DoorDash Mock |
-| Growth / Retention | Growth Hacking (TikTok) |
+| 4-Part Product Sense (Why → Users → Pain Points → Solutions) | How to Answer, Common Mistakes, Get Faster, Advanced Tips, all mock interviews |
+| User Segmentation (MECE, behavioral) | Segmenting Users, Common Mistakes, all mock interviews |
+| Three Spheres of Empathy | Advanced Tips |
+| Favorite Product (4-part / 3-part) | Most Common Question, Favorite Product |
+| Value Chain Analysis | Education Mock |
+| Ecosystem / Supply & Demand | Parking Mock, DoorDash Mock |
+| 3-Part Product Strategy (Company → Ecosystem → Execution) | Google Strategy How-to, Google Strategy Mock |
+| 6-Part Market Entry | Market Entry (Amazon smartphones) |
+| 5-Step Go-to-Market | GTM in 5 Steps |
+| 4-Part Monetization + 6 Models | Monetization |
+| Growth First Principles + 8 Tactics | Growth Hacking (TikTok) |
+| 8-Step Take-Home + 10-Section Write-Up | Take-Home 8 Steps, Take-Home Real Example |
+| 5-Step Success Metrics | Top 5 Questions |
+| 6-Step Debugging | Top 5 Questions |
 
 ---
 

@@ -11,4 +11,4 @@ Read the PM interview coach skill at `pm-interview-coach/SKILL.md`.
    - One brief example application
 3. Keep it concise — this is a quick reference, not a teaching session.
 
-**Framework:** $ARGUMENTS (e.g., CIRCLES, GAME, RICE, STAR, TAM, Porter, SOAR)
+**Framework:** $ARGUMENTS (e.g., product-sense, segmentation, market-entry, GTM, monetization, growth, debugging, metrics, take-home, favorite-product)

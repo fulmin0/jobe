@@ -1,88 +1,43 @@
 # Estimation Frameworks
 
-## Fermi Estimation Approach
-
-**Use for:** Market sizing, back-of-envelope calculations, "how many X are there?" questions
-
-### Step-by-Step Method
-1. **Clarify what you're estimating**: Restate the question. Define scope (geography, time period, specific product).
-2. **Choose your decomposition**: Break the problem into 3-5 multiplicative or additive components.
-3. **State and justify assumptions**: For each component, state your assumption and briefly explain why.
-4. **Calculate step by step**: Show your work. Round at each step for mental math.
-5. **Sanity check**: Compare your answer to something known. Does it pass the smell test?
-6. **Give a range**: Express confidence as a range (e.g., "I estimate 5-15 million, with 10 million as my point estimate").
-
-### Decomposition Strategies
-
-**Population-based** (good for consumer products):
-```
-Total population
-x % in target demographic
-x % who have the need
-x % who would use this type of product
-x average usage/purchase per person
-```
-
-**Supply-based** (good for counting things):
-```
-Number of locations/units
-x capacity per unit
-x utilization rate
-x time period
-```
-
-**Revenue-based** (good for market sizing):
-```
-Number of potential customers
-x % who would pay
-x average price point
-x purchase frequency per year
-```
-
-### When to Use
-- "How many piano tuners are in Chicago?"
-- "What is the market size for X?"
-- "How many Y are sold per year?"
-
-### Common Mistakes
-- Not clarifying scope before starting (geography? time period? segment?)
-- Making assumptions without stating them
-- Compounding errors by having too many variables
-- Not sanity-checking the final answer
-- Over-precision (saying "4,237,192" when you should say "about 4 million")
+Frameworks synthesized from Dianna Yau video transcript knowledge base with citations. Estimation receives lightweight transcript coverage — one video touches on market sizing directly.
 
 ---
 
-## Top-Down vs Bottom-Up
+## Market Sizing Approach
+**Source:** `4RGlcs-_Ke0` — Product Strategy Interviews: Market Entry
+**Use for:** Market sizing within strategy questions, back-of-envelope calculations
 
-### Top-Down
-Start from the big picture and narrow down.
+### Top-Down Filtering Method
+Start from the largest relevant number and filter down through logical steps:
 
-**When to use**: When macro data is available (industry reports, population data, GDP).
+1. **Global/National Population** — Start with the broadest relevant base
+2. **Filter by Access** — Who has the technology/infrastructure? (e.g., smartphone users)
+3. **Filter by Need** — Who actually needs this? (e.g., annual purchasers)
+4. **Apply Share** — What realistic market share could you capture?
+5. **Calculate Revenue** — Units x price point = revenue estimate
 
-**Example**: "Revenue of coffee shops in Manhattan"
-- US coffee industry: ~$80B/year
-- NYC share: ~3% of US population but ~5% of spending = ~$4B
-- Manhattan share of NYC: ~30% = ~$1.2B
+### Worked Example (Smartphones)
+```
+World population:           7 billion
+Smartphone users:           3.5 billion (50%)
+Annual new purchases:       1 billion/year (~29% replacement rate)
+Target market share:        5%
+Units captured:             50 million
+Revenue at $500 avg:        $25 billion
+```
 
-### Bottom-Up
-Start from individual units and scale up.
-
-**When to use**: When you can estimate individual behavior or unit economics.
-
-**Example**: "Revenue of coffee shops in Manhattan"
-- Estimated 3,000 coffee shops in Manhattan
-- Average revenue per shop: ~$500K/year (based on $1,500/day average)
-- Total: 3,000 x $500K = $1.5B
-
-### Cross-Validation
-Use both approaches and compare. If they are within 2x of each other, you likely have a reasonable estimate. If they diverge wildly, investigate which assumptions are off.
+### Tips
+- "Even imperfect math is better than none" — show the analytical process
+- Round aggressively for mental math (use 7B not 7.9B)
+- State assumptions explicitly at each step
+- Sanity-check the final answer against something known
 
 ---
 
 ## Useful Reference Numbers
 
-Keep these anchors in mind for US-focused estimates:
+Keep these anchors in mind for estimates:
 
 | Fact | Number |
 |------|--------|
@@ -95,6 +50,8 @@ Keep these anchors in mind for US-focused estimates:
 | Hours in a year | ~8,760 |
 | Seconds in a day | ~86,400 |
 | World population | ~8 billion |
+| Global smartphone users | ~4.5 billion |
+| Global internet users | ~5.5 billion |
 
 ---
 
@@ -102,6 +59,7 @@ Keep these anchors in mind for US-focused estimates:
 
 1. **Round aggressively**: Use 300M instead of 331M for US population. Precision is false comfort.
 2. **Identify the swing variable**: Which assumption matters most? Spend extra time justifying that one.
-3. **Use base rates**: When unsure, start from known rates (e.g., smartphone penetration is ~85% in US).
+3. **Use base rates**: When unsure, start from known rates (e.g., smartphone penetration ~85% in US).
 4. **Think in orders of magnitude**: Is the answer millions, tens of millions, or hundreds of millions? Getting the order right matters more than the exact number.
 5. **Communicate your uncertainty**: "This could be off by 2-3x, but the order of magnitude should be right."
+6. **Show your work**: The process matters more than the final number — interviewers want to see structured analytical thinking.
