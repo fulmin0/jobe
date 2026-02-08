@@ -48,7 +48,7 @@ claude
 | `/weak-areas` | Targeted practice on your weakest dimensions |
 | `/question-bank [type] [difficulty]` | Generate practice questions |
 | `/review-session [latest\|filename]` | Review a past session |
-| `/framework [name]` | Quick reference card (CIRCLES, GAME, RICE, STAR, etc.) |
+| `/framework [name]` | Quick reference card (e.g., product-sense, market-entry, debugging, growth, monetization) |
 | `/debrief` | Post-real-interview reflection and logging |
 
 **Question types:** `product-sense`, `execution`, `strategy`, `estimation`, `behavioral`
@@ -61,7 +61,7 @@ claude
 │   ├── SKILL.md                     # Core skill definition
 │   ├── references/
 │   │   ├── rubrics/                 # Scoring rubrics (5 types + universal scale)
-│   │   └── frameworks/              # PM frameworks (CIRCLES, GAME, RICE, etc.)
+│   │   └── frameworks/              # PM frameworks (video-derived, with citations)
 │   ├── assets/                      # Templates for progress files
 │   └── scripts/                     # Transcript extraction (optional)
 ├── .claude/commands/                # Slash commands (10 workflows)
@@ -96,11 +96,11 @@ python pm-interview-coach/scripts/extract_transcripts.py --video "VIDEO_URL"
 
 ## Rubric Dimensions
 
-| Type | Dimensions |
+| Type | Dimensions (weights vary by subtype) |
 |------|-----------|
-| Product Sense | Structure (20%), User Understanding (25%), Problem Definition (15%), Solution Quality (25%), Metrics (15%) |
-| Execution | Goal Setting (20%), Metrics Selection (25%), Debugging/Root Cause (25%), Prioritization (20%), Communication (10%) |
-| Strategy | Market Understanding (25%), Strategic Thinking (25%), Business Model (20%), Risk (15%), Actionability (15%) |
+| Product Sense | Structure & Framework (10-15%), Strategic Thinking/Why (15-25%), User Empathy (25-30%), Prioritization (15-20%), Solution Creativity (15%), Communication (10%) |
+| Execution | Process Rigor (25%), Metrics Quality (15-35%), Data-Driven Thinking (20-30%), Prioritization & Trade-offs (20%), Communication Clarity (10-20%) |
+| Strategy | Market Understanding (15-25%), Strategic Thinking (20-35%), Business Model Reasoning (20-35%), Risk Assessment (10-20%), Actionability (10-30%) |
 | Estimation | Decomposition (30%), Assumptions Quality (25%), Math Execution (20%), Sanity Check (15%), Communication (10%) |
 | Behavioral | Story Selection (20%), STAR Structure (20%), Personal Contribution (25%), Impact/Results (20%), Self-Awareness (15%) |
 

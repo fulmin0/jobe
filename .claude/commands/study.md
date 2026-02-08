@@ -12,4 +12,4 @@ Run a **study session** using the Socratic method.
 4. Provide a concise summary for future reference.
 5. Suggest 2-3 practice questions where this framework applies.
 
-**Topic:** $ARGUMENTS (e.g., CIRCLES, GAME, RICE, STAR, metrics, market-sizing, prioritization)
+**Topic:** $ARGUMENTS (e.g., product-sense, segmentation, market-entry, GTM, monetization, growth, debugging, metrics, take-home, favorite-product)

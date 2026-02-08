@@ -9,7 +9,7 @@ description: >
 compatibility: Designed for Claude Code (or similar filesystem-based agents)
 metadata:
   author: fulmin
-  version: "1.0"
+  version: "1.1"
 ---
 
 # PM Interview Coach
