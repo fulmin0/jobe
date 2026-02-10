@@ -18,3 +18,8 @@ To populate the knowledge base, run:
 ```
 python pm-interview-coach/scripts/extract_transcripts.py --playlist "<URL>"
 ```
+
+## Voice Web UI
+Voice mode is the default for `/mock` and `/drill` — the server starts automatically and opens the browser.
+Use `--text` flag to run in text-only mode. Local Whisper is the default transcription model (no API key needed).
+To start the server manually: `python pm-interview-coach/scripts/voice_server.py` (use `--model api` for OpenAI API transcription).

@@ -4,6 +4,7 @@
 - **Type:** [product-sense | execution | strategy | estimation | behavioral]
 - **Difficulty:** [easy | medium | hard]
 - **Target Company:** [company or "general"]
+- **Voice Mode:** [yes | no]
 
 ## Question
 
@@ -18,6 +19,17 @@
 1. [Follow-up 1] — Response: [summary]
 2. [Follow-up 2] — Response: [summary]
 3. [Follow-up 3] — Response: [summary]
+
+## Timing
+
+| Phase | Time | Target | Status |
+|-------|------|--------|--------|
+| Initial response | X:XX | X-X min | ✓/⚠/❌ |
+| Follow-up 1 | X:XX | X-X min | ✓/⚠/❌ |
+| Follow-up 2 | X:XX | X-X min | ✓/⚠/❌ |
+| **Total** | XX:XX | X-X min | ✓/⚠/❌ |
+
+**Timing feedback:** [Pacing observations]
 
 ## Full Transcript
 

@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM Interview Coach</title>
+<style>
+  :root {
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #fff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #888;
+    --border-color: #e0e0e0;
+    --bubble-interviewer-bg: #fff;
+    --bubble-candidate-bg: #0066ff;
+    --bubble-candidate-text: #fff;
+    --accent: #0066ff;
+    --error-bg: #fff3f3;
+    --error-border: #e53e3e;
+    --error-text: #c53030;
+    --recording-color: #e53e3e;
+    --spinner-track: #ddd;
+    --success-color: #22c55e;
+    --warning-color: #eab308;
+  }
+
+  [data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #e0e0e0;
+    --text-secondary: #999;
+    --border-color: #444;
+    --bubble-interviewer-bg: #2d2d2d;
+    --bubble-candidate-bg: #0055dd;
+    --bubble-candidate-text: #fff;
+    --error-bg: #3a1a1a;
+    --error-border: #e53e3e;
+    --error-text: #f88;
+    --spinner-track: #555;
+    --success-color: #4ade80;
+    --warning-color: #facc15;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  header h1 { font-size: 16px; font-weight: 600; }
+
+  .phase-indicator {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    display: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .phase-indicator.visible { display: inline-block; }
+  .phase-indicator.question { background: #dbeafe; color: #1d4ed8; }
+  .phase-indicator.follow-up { background: #fef3c7; color: #92400e; }
+  .phase-indicator.evaluation { background: #d1fae5; color: #065f46; }
+  [data-theme="dark"] .phase-indicator.question { background: #1e3a5f; color: #93c5fd; }
+  [data-theme="dark"] .phase-indicator.follow-up { background: #4a3520; color: #fcd34d; }
+  [data-theme="dark"] .phase-indicator.evaluation { background: #1a3a2a; color: #6ee7b7; }
+
+  header .status {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  header .status[role="status"] { /* aria */ }
+
+  .header-rec-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--recording-color);
+    border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+    display: none;
+  }
+
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1;
+  }
+  .theme-toggle:hover { border-color: var(--text-secondary); }
+
+  #chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    padding-bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .bubble {
+    max-width: 75%;
+    padding: 14px 18px;
+    border-radius: 16px;
+    line-height: 1.5;
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    position: relative;
+  }
+
+  .bubble.interviewer {
+    background: var(--bubble-interviewer-bg);
+    border: 1px solid var(--border-color);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .bubble.candidate {
+    background: var(--bubble-candidate-bg);
+    color: var(--bubble-candidate-text);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .bubble .timing {
+    margin-top: 8px;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+  .bubble.interviewer .timing { color: var(--text-secondary); }
+  .bubble.candidate .timing { color: rgba(255,255,255,0.7); }
+
+  .bubble .edit-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: var(--bubble-candidate-text);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .bubble:hover .edit-btn { opacity: 1; }
+  .bubble .edit-btn:hover { background: rgba(255,255,255,0.35); }
+
+  .bubble .bubble-text[contenteditable="true"] {
+    outline: 1px dashed rgba(255,255,255,0.5);
+    border-radius: 4px;
+    padding: 2px;
+    min-height: 1em;
+  }
+
+  /* Overlay for thinking, recording, status */
+  #overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: 20px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-height: 80px;
+    justify-content: center;
+  }
+
+  #overlay.hidden { display: none; }
+
+  /* Thinking phase */
+  .thinking-phase { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .thinking-timer-row { display: flex; align-items: center; gap: 10px; }
+  .thinking-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent);
+    animation: breathe 2.5s ease-in-out infinite;
+  }
+  @keyframes breathe { 0%, 100% { opacity: 0.4; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.1); } }
+  .thinking-timer { font-size: 32px; font-weight: 700; color: var(--text-primary); }
+  .thinking-suggestion { font-size: 13px; color: var(--text-secondary); }
+  .thinking-answer-target { font-size: 13px; color: var(--text-secondary); }
+  .thinking-start-btn {
+    margin-top: 8px; padding: 12px 32px; font-size: 16px; font-weight: 600;
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    cursor: pointer; transition: transform 0.1s;
+  }
+  .thinking-start-btn:hover { transform: scale(1.03); }
+  .thinking-start-btn:active { transform: scale(0.97); }
+  .thinking-hints { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .thinking-coaching { font-size: 12px; color: var(--text-secondary); font-style: italic; margin-top: 4px; max-width: 350px; }
+  .thinking-nudge { font-size: 13px; color: var(--accent); font-weight: 500; margin-top: 8px; animation: waitpulse 2s ease-in-out infinite; }
+
+  .recording-dot {
+    width: 14px;
+    height: 14px;
+    background: var(--recording-color);
+    border-radius: 50%;
+    animation: pulse 1.2s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+
+  .recording-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--recording-color);
+  }
+
+  .recording-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* Timing target display */
+  .timing-target {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .timing-status { font-size: 14px; font-weight: 600; min-width: 20px; text-align: center; }
+
+  /* Audio level bar */
+  .level-bar-container {
+    width: 200px;
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .level-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--success-color), var(--warning-color), var(--recording-color));
+    transition: width 0.1s ease-out;
+  }
+
+  /* Mic check */
+  .mic-check { text-align: center; }
+  .mic-check-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+  .mic-check-ok { font-size: 14px; color: var(--success-color); font-weight: 600; }
+
+  .transcribing { font-size: 15px; color: var(--text-secondary); }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--spinner-track);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .waiting {
+    font-size: 15px;
+    color: var(--text-secondary);
+    animation: waitpulse 2s ease-in-out infinite;
+  }
+  @keyframes waitpulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  /* Error with recovery */
+  .error-container { text-align: center; max-width: 400px; }
+  .error-msg {
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    color: var(--error-text);
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .error-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .error-actions button {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+  .error-actions button:hover { border-color: var(--text-secondary); }
+  .error-actions button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* Session ended */
+  .session-ended { font-size: 15px; color: var(--text-secondary); text-align: center; }
+  .session-ended-label { font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
+
+  /* Text input area */
+  #text-input-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: 12px 20px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    display: none;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  #text-input-area textarea {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    resize: none;
+    min-height: 40px;
+    max-height: 120px;
+    line-height: 1.4;
+  }
+  #text-input-area textarea:focus { border-color: var(--accent); }
+  #text-input-area textarea:disabled { opacity: 0.5; }
+
+  .text-input-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .text-input-hint {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: right;
+  }
+
+  #text-input-area button {
+    padding: 10px 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  #text-input-area button:disabled { opacity: 0.5; cursor: default; }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .bubble { max-width: 90%; font-size: 14px; padding: 12px 14px; }
+    header { padding: 10px 14px; gap: 8px; }
+    .level-bar-container { width: 150px; }
+    #text-input-area { padding: 10px 14px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+  }
+
+  @media (max-width: 480px) {
+    header { flex-wrap: wrap; }
+    .phase-indicator { order: 10; width: 100%; text-align: center; margin-top: 4px; }
+    header .status { font-size: 12px; }
+    .bubble { max-width: 95%; font-size: 13px; }
+    .thinking-timer { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>PM Interview Coach</h1>
+  <span class="phase-indicator" id="phase-indicator"></span>
+  <span class="status" id="header-status" role="status">
+    <span class="header-rec-dot" id="header-rec-dot"></span>
+    <span id="header-status-text">Waiting for session...</span>
+  </span>
+  <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">&#9790;</button>
+</header>
+
+<div id="chat" aria-live="polite"></div>
+
+<div id="overlay" aria-live="assertive">
+  <span class="waiting">Waiting for interviewer...</span>
+</div>
+
+<div id="text-input-area">
+  <div class="text-input-col">
+    <textarea id="text-input" rows="2" placeholder="Type your answer..."></textarea>
+    <span class="text-input-hint" id="text-input-hint"></span>
+  </div>
+  <button id="text-submit">Send</button>
+</div>
+
+<script>
+(function() {
+  // --- DOM refs ---
+  const chat = document.getElementById("chat");
+  const overlay = document.getElementById("overlay");
+  const headerStatusText = document.getElementById("header-status-text");
+  const headerRecDot = document.getElementById("header-rec-dot");
+  const phaseIndicator = document.getElementById("phase-indicator");
+  const textInputArea = document.getElementById("text-input-area");
+  const textInput = document.getElementById("text-input");
+  const textSubmit = document.getElementById("text-submit");
+  const themeToggle = document.getElementById("theme-toggle");
+  const textInputHint = document.getElementById("text-input-hint");
+
+  // --- App State ---
+  const STATES = {
+    IDLE: "IDLE",
+    MIC_CHECK: "MIC_CHECK",
+    THINKING: "THINKING",
+    RECORDING: "RECORDING",
+    TRANSCRIBING: "TRANSCRIBING",
+    TEXT_INPUT: "TEXT_INPUT",
+    WAITING: "WAITING",
+    WAITING_TEXT: "WAITING_TEXT", // waiting in text mode (input visible but disabled)
+    SESSION_ENDED: "SESSION_ENDED",
+    ERROR: "ERROR",
+  };
+
+  let appState = {
+    current: STATES.IDLE,
+    textMode: false,        // true when user has switched to text-only
+    micCheckPassed: false,
+    ignoreNextTranscript: false,
+    consecutiveHeartbeats: 0,
+  };
+
+  let audioCtx = null;
+  let micStream = null;
+  let sessionStartTime = null;
+  let sessionTimerInterval = null;
+  let currentSilenceDuration = 5;
+  let micIdleTimeout = null;
+
+  // Active cleanup handles for current state
+  let activeCleanup = null;
+
+  // Suggested thinking time in seconds: { type: { initial: N, followup: N } }
+  const THINKING_TIMES = {
+    "product_sense": { initial: 90, followup: 30 },
+    "execution":     { initial: 60, followup: 30 },
+    "strategy":      { initial: 90, followup: 30 },
+    "estimation":    { initial: 60, followup: 20 },
+    "behavioral":    { initial: 30, followup: 15 },
+  };
+
+  // Timing targets in seconds: { type: { initial: [min, max], followup: [min, max] } }
+  const TIMING_TARGETS = {
+    "product_sense": { initial: [300, 420], followup: [60, 180] },
+    "execution":     { initial: [360, 600], followup: [120, 240] },
+    "strategy":      { initial: [480, 720], followup: [120, 300] },
+    "estimation":    { initial: [480, 720], followup: [60, 180] },
+    "behavioral":    { initial: [180, 300], followup: [60, 120] },
+  };
+
+  // Detect platform for keyboard hint
+  const isMac = navigator.platform && navigator.platform.includes("Mac");
+  textInputHint.textContent = (isMac ? "\u2318" : "Ctrl") + "+Enter to send";
+
+  // --- State Machine ---
+  function setState(newState, data) {
+    const prev = appState.current;
+    appState.current = newState;
+
+    // Clean up previous state
+    if (activeCleanup) {
+      activeCleanup();
+      activeCleanup = null;
+    }
+
+    // Reset mic idle timer on any state that isn't WAITING
+    if (newState !== STATES.WAITING && newState !== STATES.WAITING_TEXT) {
+      clearMicIdleTimeout();
+    }
+
+    switch (newState) {
+      case STATES.IDLE:
+      case STATES.WAITING:
+        overlay.className = "";
+        overlay.innerHTML = '<span class="waiting">Waiting for interviewer...</span>';
+        textInputArea.style.display = "none";
+        setHeaderRecording(false);
+        startMicIdleTimeout();
+        break;
+
+      case STATES.WAITING_TEXT:
+        // Text mode waiting: keep text input visible but disabled
+        overlay.className = "hidden";
+        textInputArea.style.display = "flex";
+        textInput.disabled = true;
+        textSubmit.disabled = true;
+        textInput.placeholder = "Waiting for response...";
+        setHeaderRecording(false);
+        break;
+
+      case STATES.MIC_CHECK:
+        overlay.className = "";
+        overlay.innerHTML =
+          '<div class="mic-check">' +
+          '<div class="mic-check-label">Checking microphone...</div>' +
+          '<div class="level-bar-container"><div class="level-bar" id="level-bar"></div></div>' +
+          '</div>';
+        textInputArea.style.display = "none";
+        break;
+
+      case STATES.THINKING:
+        overlay.className = "";
+        textInputArea.style.display = "none";
+        setHeaderRecording(false);
+        headerStatusText.textContent = "Thinking...";
+        break;
+
+      case STATES.RECORDING:
+        overlay.className = "";
+        textInputArea.style.display = "none";
+        setHeaderRecording(true);
+        break;
+
+      case STATES.TRANSCRIBING:
+        overlay.className = "";
+        overlay.innerHTML = '<span class="transcribing"><span class="spinner"></span>Transcribing...</span>';
+        textInputArea.style.display = "none";
+        setHeaderRecording(false);
+        break;
+
+      case STATES.TEXT_INPUT:
+        overlay.className = "hidden";
+        textInputArea.style.display = "flex";
+        textInput.disabled = false;
+        textSubmit.disabled = false;
+        textInput.placeholder = "Type your answer...";
+        textInput.focus();
+        headerStatusText.textContent = "Text mode";
+        break;
+
+      case STATES.SESSION_ENDED:
+        var msg = (data && data.message) || "Session complete.";
+        overlay.className = "";
+        overlay.innerHTML =
+          '<div class="session-ended">' +
+          '<div class="session-ended-label">Session Ended</div>' +
+          '<div></div>' +
+          '</div>';
+        // Set message text safely
+        overlay.querySelector(".session-ended div:last-child").textContent = msg;
+        textInputArea.style.display = "none";
+        setHeaderRecording(false);
+        if (sessionTimerInterval) { clearInterval(sessionTimerInterval); sessionTimerInterval = null; }
+        updatePhase("");
+        releaseMic();
+        headerStatusText.textContent = "Session ended";
+        break;
+
+      case STATES.ERROR:
+        overlay.className = "";
+        textInputArea.style.display = "none";
+        setHeaderRecording(false);
+        // Error content is set by showErrorWithRecovery
+        break;
+    }
+
+    // Scroll to bottom on state change
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  // --- Dark mode ---
+  function initTheme() {
+    const saved = localStorage.getItem("pm-coach-theme");
+    if (saved === "dark") document.documentElement.setAttribute("data-theme", "dark");
+    updateThemeButton();
+  }
+
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    if (isDark) {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("pm-coach-theme", "light");
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("pm-coach-theme", "dark");
+    }
+    updateThemeButton();
+  }
+
+  function updateThemeButton() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    themeToggle.innerHTML = isDark ? "&#9788;" : "&#9790;";
+  }
+
+  themeToggle.addEventListener("click", toggleTheme);
+  initTheme();
+
+  // --- Session timer ---
+  function startSessionTimer() {
+    if (sessionStartTime) return;
+    sessionStartTime = Date.now();
+    sessionTimerInterval = setInterval(() => {
+      if (appState.current === STATES.RECORDING) return; // don't overwrite "Recording" status
+      const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+      const m = Math.floor(elapsed / 60);
+      const s = elapsed % 60;
+      headerStatusText.textContent = "Session active \u00b7 " + m + ":" + String(s).padStart(2, "0");
+    }, 1000);
+  }
+
+  // --- Header helpers ---
+  function setHeaderRecording(on) {
+    headerRecDot.style.display = on ? "inline-block" : "none";
+    if (on) headerStatusText.textContent = "Recording";
+  }
+
+  function updatePhase(phase) {
+    if (!phase) {
+      phaseIndicator.className = "phase-indicator";
+      return;
+    }
+    const p = phase.toLowerCase();
+    let cls = "question";
+    if (p.includes("follow")) cls = "follow-up";
+    else if (p.includes("eval")) cls = "evaluation";
+    phaseIndicator.textContent = phase;
+    phaseIndicator.className = "phase-indicator visible " + cls;
+  }
+
+  // --- Audio beep ---
+  function beep(freq, duration) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = freq || 880;
+    gain.gain.value = 0.15;
+    osc.start();
+    osc.stop(audioCtx.currentTime + (duration || 0.15));
+  }
+
+  // --- Chat bubbles ---
+  function addBubble(role, text, timing, editable) {
+    const div = document.createElement("div");
+    div.className = "bubble " + role;
+
+    const textSpan = document.createElement("span");
+    textSpan.className = "bubble-text";
+    textSpan.textContent = text;
+    div.appendChild(textSpan);
+
+    if (editable) {
+      const editBtn = document.createElement("button");
+      editBtn.className = "edit-btn";
+      editBtn.textContent = "Edit";
+      editBtn.setAttribute("aria-label", "Edit transcript");
+      editBtn.addEventListener("click", function() {
+        if (textSpan.contentEditable === "true") {
+          // Save — sanitize by reading textContent and setting it back
+          const corrected = textSpan.textContent.trim();
+          textSpan.contentEditable = "false";
+          textSpan.textContent = corrected;
+          editBtn.textContent = "Edit";
+          // Fire-and-forget to /correction endpoint (no event, no duplicate)
+          fetch("/correction", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: corrected }),
+          }).catch(function() {});
+        } else {
+          textSpan.contentEditable = "true";
+          textSpan.focus();
+          editBtn.textContent = "Save";
+        }
+      });
+      div.appendChild(editBtn);
+    }
+
+    if (timing) {
+      const t = document.createElement("div");
+      t.className = "timing";
+      t.textContent = timing;
+      div.appendChild(t);
+    }
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function formatTiming(durationSec) {
+    const m = Math.floor(durationSec / 60);
+    const s = Math.floor(durationSec % 60);
+    return m + ":" + String(s).padStart(2, "0");
+  }
+
+  // --- Unified Error Handler ---
+  function showErrorWithRecovery(msg, options) {
+    setState(STATES.ERROR);
+    options = options || {};
+
+    const container = document.createElement("div");
+    container.className = "error-container";
+
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "error-msg";
+    msgDiv.textContent = msg; // safe: textContent, no innerHTML
+    container.appendChild(msgDiv);
+
+    const actions = document.createElement("div");
+    actions.className = "error-actions";
+
+    if (options.retry) {
+      const retryBtn = document.createElement("button");
+      retryBtn.textContent = "Retry";
+      retryBtn.className = "primary";
+      retryBtn.addEventListener("click", function() { options.retry(); });
+      actions.appendChild(retryBtn);
+    }
+
+    if (options.textMode) {
+      const textBtn = document.createElement("button");
+      textBtn.textContent = "Switch to text mode";
+      textBtn.addEventListener("click", function() {
+        switchToTextMode();
+      });
+      actions.appendChild(textBtn);
+    }
+
+    if (options.dismiss !== false) {
+      const dismissBtn = document.createElement("button");
+      dismissBtn.textContent = "Dismiss";
+      dismissBtn.addEventListener("click", function() {
+        if (appState.textMode) {
+          setState(STATES.TEXT_INPUT);
+        } else {
+          setState(STATES.WAITING);
+        }
+      });
+      actions.appendChild(dismissBtn);
+    }
+
+    container.appendChild(actions);
+    overlay.innerHTML = "";
+    overlay.appendChild(container);
+
+    // Unblock server if needed
+    if (options.unblockServer) {
+      postEmptyAudio();
+    }
+  }
+
+  // --- Level bar update ---
+  function updateLevelBar(rms) {
+    const bar = document.getElementById("level-bar");
+    if (!bar) return;
+    const pct = Math.min(100, Math.max(0, (rms / 0.15) * 100));
+    bar.style.width = pct + "%";
+  }
+
+  // --- Silence detection (uses setInterval for background tab support) ---
+  function createSilenceDetector(stream, silenceDuration, onSilence, onLevelUpdate) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const source = audioCtx.createMediaStreamSource(stream);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    source.connect(analyser);
+
+    const dataArray = new Float32Array(analyser.fftSize);
+    let noiseFloor = 0;
+    let threshold = 0;
+    let speechDetected = false;
+    let silenceStart = null;
+    let calibrated = false;
+    let stopped = false;
+    let calibrationDoneTime = null;
+    const noSpeechTimeout = 30;
+    const calibrationStart = Date.now();
+
+    function tick() {
+      if (stopped) return;
+      analyser.getFloatTimeDomainData(dataArray);
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) sum += dataArray[i] * dataArray[i];
+      const rms = Math.sqrt(sum / dataArray.length);
+
+      if (onLevelUpdate) onLevelUpdate(rms);
+
+      if (!calibrated) {
+        if (Date.now() - calibrationStart < 500) {
+          noiseFloor = Math.max(noiseFloor, rms);
+          return;
+        }
+        threshold = Math.max(noiseFloor * 2.0, 0.005);
+        calibrated = true;
+        calibrationDoneTime = Date.now();
+      }
+
+      if (rms > threshold) {
+        speechDetected = true;
+        silenceStart = null;
+      } else if (speechDetected) {
+        if (silenceStart === null) silenceStart = Date.now();
+        else if ((Date.now() - silenceStart) / 1000 >= silenceDuration) {
+          stopped = true;
+          onSilence();
+          return;
+        }
+      }
+
+      // Failsafe: no speech after timeout
+      if (!speechDetected && calibrationDoneTime &&
+          (Date.now() - calibrationDoneTime) / 1000 >= noSpeechTimeout) {
+        stopped = true;
+        onSilence();
+        return;
+      }
+    }
+
+    // Use setInterval instead of requestAnimationFrame (works in background tabs)
+    const intervalId = setInterval(tick, 60);
+
+    // visibilitychange handler for Safari (may pause intervals entirely)
+    function onVisibilityChange() {
+      if (stopped) return;
+      if (!document.hidden && speechDetected && silenceStart !== null) {
+        // Tab just became visible — do wall-clock check
+        if ((Date.now() - silenceStart) / 1000 >= silenceDuration) {
+          stopped = true;
+          onSilence();
+        }
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return {
+      stop: function() {
+        stopped = true;
+        clearInterval(intervalId);
+        source.disconnect();
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+      }
+    };
+  }
+
+  // --- Mic management ---
+  function releaseMic() {
+    if (micStream) {
+      micStream.getTracks().forEach(function(t) { t.stop(); });
+      micStream = null;
+    }
+  }
+
+  function startMicIdleTimeout() {
+    clearMicIdleTimeout();
+    if (micStream) {
+      micIdleTimeout = setTimeout(function() {
+        releaseMic();
+      }, 60000); // 60s idle → release mic
+    }
+  }
+
+  function clearMicIdleTimeout() {
+    if (micIdleTimeout) { clearTimeout(micIdleTimeout); micIdleTimeout = null; }
+  }
+
+  function isMicStreamLive() {
+    return micStream && micStream.getTracks().every(function(t) { return t.readyState === "live"; });
+  }
+
+  async function ensureMicStream() {
+    if (isMicStreamLive()) return true;
+    micStream = null; // discard dead stream
+    try {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  window.addEventListener("beforeunload", releaseMic);
+
+  // --- Mic check ---
+  async function runMicCheck() {
+    setState(STATES.MIC_CHECK);
+    const ok = await ensureMicStream();
+    if (!ok) {
+      showErrorWithRecovery("Microphone access denied.", { textMode: true, unblockServer: true, dismiss: false });
+      return false;
+    }
+
+    // Show level for 2 seconds
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") await audioCtx.resume();
+    const source = audioCtx.createMediaStreamSource(micStream);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    source.connect(analyser);
+    const dataArray = new Float32Array(analyser.fftSize);
+
+    let checkStopped = false;
+    const checkInterval = setInterval(function() {
+      if (checkStopped) return;
+      analyser.getFloatTimeDomainData(dataArray);
+      let sum = 0;
+      for (let i = 0; i < dataArray.length; i++) sum += dataArray[i] * dataArray[i];
+      updateLevelBar(Math.sqrt(sum / dataArray.length));
+    }, 60);
+
+    await new Promise(function(r) { setTimeout(r, 2000); });
+    checkStopped = true;
+    clearInterval(checkInterval);
+    source.disconnect();
+
+    // Brief confirmation
+    overlay.innerHTML = '<div class="mic-check"><div class="mic-check-ok">Microphone connected</div></div>';
+    await new Promise(function(r) { setTimeout(r, 800); });
+
+    appState.micCheckPassed = true;
+    return true;
+  }
+
+  // --- Text mode ---
+  function switchToTextMode() {
+    appState.textMode = true;
+    releaseMic();
+    setState(STATES.TEXT_INPUT);
+  }
+
+  // --- Thinking phase: user structures thoughts, presses button/spacebar to start recording ---
+  function showThinkingPhase(questionType, phaseNumber) {
+    setState(STATES.THINKING);
+    let cancelled = false;
+    let resolvePromise;
+    const start = Date.now();
+
+    // Suggested thinking time
+    const thinkTimes = THINKING_TIMES[questionType];
+    let suggestedSec = 60;
+    if (thinkTimes) {
+      suggestedSec = phaseNumber <= 1 ? thinkTimes.initial : thinkTimes.followup;
+    }
+
+    // Answer target time
+    let answerTargetHtml = "";
+    const targets = TIMING_TARGETS[questionType];
+    if (targets) {
+      const range = phaseNumber <= 1 ? targets.initial : targets.followup;
+      answerTargetHtml = '<div class="thinking-answer-target">Answer target: ' +
+        formatTiming(range[0]) + ' \u2013 ' + formatTiming(range[1]) + '</div>';
+    }
+
+    overlay.innerHTML =
+      '<div class="thinking-phase">' +
+      '<div class="thinking-timer-row">' +
+      '<span class="thinking-dot"></span>' +
+      '<span class="thinking-timer" id="thinking-timer">0:00</span>' +
+      '</div>' +
+      '<div class="thinking-suggestion">Suggested: ~' + formatTiming(suggestedSec) + '</div>' +
+      answerTargetHtml +
+      '<button class="thinking-start-btn" id="thinking-start-btn">Start Recording</button>' +
+      '<div class="thinking-hints">' +
+      '<span>Spacebar to start \u00b7 ESC to cancel</span>' +
+      '</div>' +
+      '<div class="thinking-coaching">In a real interview, say: \u201cLet me take a minute to structure my approach.\u201d</div>' +
+      '</div>';
+
+    const timerEl = document.getElementById("thinking-timer");
+    const startBtn = document.getElementById("thinking-start-btn");
+
+    // Elapsed timer
+    const interval = setInterval(function() {
+      if (cancelled) return;
+      const elapsed = Math.floor((Date.now() - start) / 1000);
+      timerEl.textContent = Math.floor(elapsed / 60) + ":" + String(elapsed % 60).padStart(2, "0");
+
+      // Gentle nudge after 3 minutes
+      if (elapsed === 180 && !document.getElementById("thinking-nudge")) {
+        const nudge = document.createElement("div");
+        nudge.id = "thinking-nudge";
+        nudge.className = "thinking-nudge";
+        nudge.textContent = "Ready? Press spacebar when you\u2019re set.";
+        overlay.querySelector(".thinking-phase").appendChild(nudge);
+      }
+    }, 500);
+
+    function triggerStart() {
+      if (cancelled) return;
+      cancelled = true;
+      cleanup();
+      resolvePromise(true);
+    }
+
+    function triggerCancel() {
+      if (cancelled) return;
+      cancelled = true;
+      cleanup();
+      resolvePromise(false);
+    }
+
+    function onKeyDown(e) {
+      if (cancelled) return;
+      if (e.code === "Space") {
+        e.preventDefault();
+        triggerStart();
+      } else if (e.code === "Escape") {
+        e.preventDefault();
+        triggerCancel();
+      }
+    }
+
+    startBtn.addEventListener("click", triggerStart);
+    document.addEventListener("keydown", onKeyDown);
+
+    function cleanup() {
+      clearInterval(interval);
+      document.removeEventListener("keydown", onKeyDown);
+    }
+
+    activeCleanup = cleanup;
+
+    return new Promise(function(resolve) {
+      resolvePromise = resolve;
+    });
+  }
+
+  // --- Recording ---
+  function showRecordingOverlay(questionType, phaseNumber) {
+    const start = Date.now();
+
+    // Build timing target info
+    let targetHtml = "";
+    let targetMin = 0, targetMax = 0;
+    const targets = TIMING_TARGETS[questionType];
+    if (targets) {
+      const range = phaseNumber <= 1 ? targets.initial : targets.followup;
+      targetMin = range[0];
+      targetMax = range[1];
+      targetHtml = '<div class="timing-target">' +
+        'Target: ' + formatTiming(targetMin) + ' \u2013 ' + formatTiming(targetMax) +
+        ' <span class="timing-status" id="timing-status"></span></div>';
+    }
+
+    overlay.innerHTML =
+      '<div class="recording-row"><span class="recording-dot"></span><span id="rec-timer">0:00</span></div>' +
+      targetHtml +
+      '<div class="level-bar-container"><div class="level-bar" id="level-bar"></div></div>' +
+      '<span class="recording-sub">Press ESC to stop early</span>';
+
+    const timerEl = document.getElementById("rec-timer");
+    const timingStatusEl = document.getElementById("timing-status");
+    const interval = setInterval(function() {
+      const elapsed = Math.floor((Date.now() - start) / 1000);
+      timerEl.textContent = Math.floor(elapsed / 60) + ":" + String(elapsed % 60).padStart(2, "0");
+
+      if (timingStatusEl && targetMax > 0) {
+        if (elapsed < targetMin) {
+          timingStatusEl.textContent = "";
+        } else if (elapsed <= targetMax) {
+          timingStatusEl.textContent = "\u2713";
+          timingStatusEl.style.color = "var(--success-color)";
+        } else if (elapsed <= targetMax * 1.3) {
+          timingStatusEl.textContent = "\u26a0";
+          timingStatusEl.style.color = "var(--warning-color)";
+        } else {
+          timingStatusEl.textContent = "\u274c";
+          timingStatusEl.style.color = "var(--recording-color)";
+        }
+      }
+    }, 500);
+
+    return { interval: interval, start: start };
+  }
+
+  async function startRecording(readDelay, silenceDuration, questionType, phaseNumber) {
+    // Guard: don't start if already recording or thinking
+    if (appState.current === STATES.RECORDING || appState.current === STATES.THINKING) return;
+
+    currentSilenceDuration = silenceDuration;
+
+    // Text mode: just show text input
+    if (appState.textMode) {
+      setState(STATES.TEXT_INPUT);
+      return;
+    }
+
+    // Mic check on first recording
+    if (!appState.micCheckPassed) {
+      const ok = await runMicCheck();
+      if (!ok) return; // error handler already shown
+    } else {
+      // Ensure mic stream is live
+      const ok = await ensureMicStream();
+      if (!ok) {
+        showErrorWithRecovery("Microphone access lost.", { textMode: true, unblockServer: true });
+        return;
+      }
+    }
+
+    // Check stream is actually alive
+    if (!isMicStreamLive()) {
+      showErrorWithRecovery("Microphone disconnected.", { textMode: true, unblockServer: true });
+      return;
+    }
+
+    // Thinking phase: user structures thoughts, presses button to start recording
+    const proceed = await showThinkingPhase(questionType, phaseNumber);
+    if (!proceed) {
+      postEmptyAudio();
+      setState(STATES.WAITING);
+      return;
+    }
+
+    // Start recording
+    setState(STATES.RECORDING);
+    beep(880, 0.15);
+    const recState = showRecordingOverlay(questionType, phaseNumber);
+
+    // Choose codec
+    let mimeType = "audio/webm;codecs=opus";
+    if (!MediaRecorder.isTypeSupported(mimeType)) {
+      mimeType = "audio/mp4";
+      if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = "";
+    }
+
+    const chunks = [];
+    const recorder = new MediaRecorder(micStream, mimeType ? { mimeType: mimeType } : {});
+    const recordStart = Date.now();
+
+    recorder.ondataavailable = function(e) {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+
+    function cleanupRecording() {
+      clearInterval(recState.interval);
+      document.removeEventListener("keydown", onKeyDown);
+    }
+
+    recorder.onstop = async function() {
+      cleanupRecording();
+      beep(660, 0.15);
+      const duration = (Date.now() - recordStart) / 1000;
+
+      if (chunks.length === 0) {
+        postEmptyAudio();
+        return;
+      }
+
+      setState(STATES.TRANSCRIBING);
+      const blob = new Blob(chunks, { type: recorder.mimeType });
+      const form = new FormData();
+      form.append("audio", blob, "recording" + (recorder.mimeType.includes("mp4") ? ".mp4" : ".webm"));
+      form.append("duration", duration.toFixed(1));
+
+      try {
+        const res = await fetch("/audio", { method: "POST", body: form });
+        if (!res.ok) throw new Error("Upload failed: " + res.status);
+      } catch (e) {
+        showErrorWithRecovery("Failed to upload audio: " + e.message, {
+          retry: function() { /* re-upload same blob */
+            setState(STATES.TRANSCRIBING);
+            fetch("/audio", { method: "POST", body: form })
+              .then(function(r) { if (!r.ok) throw new Error(r.status); })
+              .catch(function(err) {
+                showErrorWithRecovery("Upload failed again: " + err.message, { textMode: true, unblockServer: true });
+              });
+          },
+          textMode: true,
+          unblockServer: true,
+        });
+      }
+    };
+
+    recorder.onerror = function(e) {
+      cleanupRecording();
+      if (detector) detector.stop();
+      showErrorWithRecovery("Recording failed: " + (e.error ? e.error.name : "unknown error"), {
+        textMode: true,
+        unblockServer: true,
+      });
+    };
+
+    // Silence detection with level callback
+    var detector = createSilenceDetector(micStream, silenceDuration, function() {
+      if (recorder.state === "recording") recorder.stop();
+    }, updateLevelBar);
+
+    recorder.start(1000);
+
+    // ESC to stop early
+    function onKeyDown(e) {
+      if (e.code === "Escape" && recorder.state === "recording") {
+        e.preventDefault();
+        detector.stop();
+        recorder.stop();
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+
+    // Cleanup handle for state machine
+    activeCleanup = function() {
+      if (recorder.state === "recording") {
+        detector.stop();
+        recorder.stop();
+      }
+      cleanupRecording();
+    };
+
+    // Safety: max 10 min
+    setTimeout(function() {
+      if (recorder.state === "recording") {
+        detector.stop();
+        recorder.stop();
+      }
+    }, 600000);
+  }
+
+  function postEmptyAudio() {
+    const form = new FormData();
+    form.append("duration", "0");
+    fetch("/audio", { method: "POST", body: form }).catch(function() {});
+  }
+
+  // --- Text input submission ---
+  async function submitText() {
+    const text = textInput.value.trim();
+    if (!text) return;
+    textInput.value = "";
+    textInput.style.height = ""; // reset auto-resize
+
+    // Optimistic UI: add bubble immediately, set flag to skip server echo
+    addBubble("candidate", text);
+    appState.ignoreNextTranscript = true;
+
+    try {
+      await fetch("/text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: text }),
+      });
+    } catch (e) {
+      showErrorWithRecovery("Failed to send text: " + e.message, { dismiss: true });
+      return;
+    }
+
+    // Stay in text mode but show waiting variant
+    setState(STATES.WAITING_TEXT);
+  }
+
+  textSubmit.addEventListener("click", submitText);
+  textInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      submitText();
+    }
+  });
+
+  // Auto-resize textarea
+  textInput.addEventListener("input", function() {
+    textInput.style.height = "";
+    textInput.style.height = Math.min(textInput.scrollHeight, 120) + "px";
+  });
+
+  // --- Event loop (long-poll with AbortController timeout) ---
+  async function pollEvents() {
+    while (true) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(function() { controller.abort(); }, 35000);
+
+        const res = await fetch("/events", { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          await sleep(2000);
+          continue;
+        }
+        const event = await res.json();
+        handleEvent(event);
+      } catch (e) {
+        if (e.name === "AbortError") {
+          // Timeout on long-poll, just retry
+          continue;
+        }
+        headerStatusText.textContent = "Reconnecting...";
+        await sleep(3000);
+        // Don't set "Connected" — let the next successful event update the status
+      }
+    }
+  }
+
+  function handleEvent(event) {
+    if (event.type !== "heartbeat") {
+      appState.consecutiveHeartbeats = 0;
+    }
+
+    switch (event.type) {
+      case "message":
+        addBubble(event.role || "interviewer", event.text);
+        updatePhase(event.phase || "");
+        // Do NOT call setState here — let the next event (record_start) set the overlay
+        startSessionTimer();
+        break;
+
+      case "record_start":
+        startRecording(
+          event.read_delay || 0,
+          event.silence_duration || 5,
+          event.question_type || "",
+          event.phase_number || 0
+        );
+        break;
+
+      case "transcribing":
+        if (appState.current !== STATES.TRANSCRIBING) {
+          setState(STATES.TRANSCRIBING);
+        }
+        break;
+
+      case "transcript":
+        if (appState.ignoreNextTranscript) {
+          appState.ignoreNextTranscript = false;
+          // Still transition state
+          if (appState.textMode) {
+            setState(STATES.WAITING_TEXT);
+          } else {
+            setState(STATES.WAITING);
+          }
+          break;
+        }
+        var text = event.text || "";
+        if (text) {
+          var timing = formatTiming(event.duration_seconds || 0);
+          addBubble("candidate", text, "\u23f1 " + timing, true);
+        }
+        if (appState.textMode) {
+          setState(STATES.WAITING_TEXT);
+        } else {
+          setState(STATES.WAITING);
+        }
+        break;
+
+      case "session_end":
+        setState(STATES.SESSION_ENDED, { message: event.message });
+        break;
+
+      case "heartbeat":
+        appState.consecutiveHeartbeats++;
+        // 6 consecutive heartbeats = 3 minutes with no real events
+        if (appState.consecutiveHeartbeats >= 6 &&
+            appState.current !== STATES.SESSION_ENDED &&
+            appState.current !== STATES.RECORDING &&
+            appState.current !== STATES.THINKING) {
+          overlay.className = "";
+          overlay.innerHTML =
+            '<div class="session-ended">' +
+            '<div class="session-ended-label">Interviewer disconnected</div>' +
+            '<div>No activity for 3 minutes. You can close this tab or wait for reconnection.</div>' +
+            '</div>';
+        }
+        break;
+    }
+  }
+
+  function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+  // --- Dynamic chat padding via ResizeObserver ---
+  function updateChatPadding() {
+    // Use overlay if visible, text-input-area if visible, fallback to 100px
+    if (overlay.className !== "hidden" && overlay.offsetHeight > 0) {
+      chat.style.paddingBottom = (overlay.offsetHeight + 20) + "px";
+    } else if (textInputArea.style.display === "flex") {
+      chat.style.paddingBottom = (textInputArea.offsetHeight + 20) + "px";
+    } else {
+      chat.style.paddingBottom = "100px";
+    }
+  }
+  if (typeof ResizeObserver !== "undefined") {
+    const ro = new ResizeObserver(updateChatPadding);
+    ro.observe(overlay);
+    ro.observe(textInputArea);
+  }
+  // Also update on state change — hook into setState
+  const origSetState = setState;
+  setState = function(newState, data) {
+    origSetState(newState, data);
+    requestAnimationFrame(updateChatPadding);
+  };
+
+  // --- Init ---
+  setState(STATES.IDLE);
+  pollEvents();
+})();
+</script>
+</body>
+</html>

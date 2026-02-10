@@ -94,6 +94,28 @@ python pm-interview-coach/scripts/extract_transcripts.py --playlist "PLAYLIST_UR
 python pm-interview-coach/scripts/extract_transcripts.py --video "VIDEO_URL"
 ```
 
+### Voice Input (Optional)
+
+Speak your answers during mock interviews for a more realistic experience:
+
+1. Install audio dependencies:
+   ```
+   pip install sounddevice scipy openai
+   ```
+
+2. Set API key:
+   ```
+   export OPENAI_API_KEY="sk-..."
+   ```
+
+3. Use --voice flag:
+   ```
+   /mock product-sense --voice
+   ```
+
+For offline use, add `--model local` (uses local Whisper, slower but no API key needed).
+Tip: Use a headset or quiet room for best transcription quality.
+
 ## Rubric Dimensions
 
 | Type | Dimensions (weights vary by subtype) |

@@ -9,4 +9,4 @@ Run a **quick daily drill** (~10 minutes).
 5. Assign an overall score and log it to `progress/question-log.md` and update `progress/summary.md`.
 6. Give one specific improvement tip.
 
-**Type:** $ARGUMENTS (default to "auto" — agent selects based on weak areas)
+**Type:** $ARGUMENTS (default: auto — selects based on weak areas. Voice web UI is on by default — use --text for text-only.)

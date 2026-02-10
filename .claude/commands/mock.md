@@ -10,4 +10,4 @@ Run a **full mock interview session**. Follow the complete mock interview flow:
 6. Evaluate my answer against the rubric with per-dimension scores.
 7. Log the session to `progress/sessions/` and update `progress/summary.md` and `progress/question-log.md`.
 
-**Interview type:** $ARGUMENTS (default to "product-sense" if not specified. Valid types: product-sense, execution, strategy, estimation, behavioral. Second argument can specify a target company.)
+**Interview type:** $ARGUMENTS (default: product-sense. Types: product-sense, execution, strategy, estimation, behavioral. Second arg: target company. Voice web UI is on by default — use --text for text-only.)
